@@ -7,14 +7,17 @@ class MoviesController < ApplicationController
   end
 
   def index
-   @all_ratings = ['G','PG','PG-13','R']
+   # Setup Variables for the Index Page
+   @all_ratings = Movie.all_ratings
    @ratings_to_show = params[:ratings]
-   if(!@ratings_to_show.nil?)
-     @movies = Movie.with_ratings(@ratings_to_show.keys)
-   else
-     @ratings_to_show = ''
-     @movies = Movie.all
+   @sort_param = params[:sort]  
+   @headerCSS = "hilite bg-warning"
+   # If ratings to show has a nill value, set it to all_ratings in the Movie Model
+   if @ratings_to_show.nil?
+     @ratings_to_show = @all_ratings.map{ |rating| [ rating, rating.upcase ] }.to_h
    end
+     @movies = Movie.order(@sort_param).with_ratings(@ratings_to_show.keys)
+     
   end
 
   def new
