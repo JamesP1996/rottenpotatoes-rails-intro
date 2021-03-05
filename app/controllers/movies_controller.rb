@@ -10,14 +10,24 @@ class MoviesController < ApplicationController
    # Setup Variables for the Index Page
    @all_ratings = Movie.all_ratings
    @ratings_to_show = params[:ratings]
-   @sort_param = params[:sort]  
+   @sort_param = params[:sort]
    @headerCSS = "hilite bg-warning"
+    
+  if params[:sort].nil? and params[:ratings].nil? and (not session[:sort].nil? or not session[:ratings].nil?)
+    redirect_to movies_path(:sort => session[:sort], :ratings => session[:ratings])
+  end
+    
+
    # If ratings to show has a nill value, set it to all_ratings in the Movie Model
    if @ratings_to_show.nil?
      @ratings_to_show = @all_ratings.map{ |rating| [ rating, rating.upcase ] }.to_h
    end
-     @movies = Movie.order(@sort_param).with_ratings(@ratings_to_show.keys)
+    
+   @movies = Movie.order(@sort_param).with_ratings(@ratings_to_show.keys)
+   session[:sort] = @sort_param
+   session[:ratings] = @ratings_to_show
      
+  
   end
 
   def new
